@@ -1,22 +1,56 @@
 {
-	"db": {
-		"connString":"(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.1.41)(PORT=1521))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=XE)))",
-		"username":"admin",
-		"password":"admin1234",
-		"pool":50,
-		"timeout":30000
+	"collection2path": {
+		"serviceTreatmentRecords" : "health/clinicalDocuments/historicalData/medicalHistory/serviceTreatmentRecords",
+		"disabilityBenefitsQuestionnaires" : "health/clinicalDocuments/clinicalAssessments/cpExams"
 	},
-	"server": {
-		"port": 4001,
-		"host": "localhost"
+	"listener": {
+		"redis": {
+			"port":"6379",
+			"host":"127.0.0.1"
+		},
+		"channel":"core.6379"
 	},
-	"accessControl": {
-		"allowOrigin": "*",
-		"allowMethods": "GET,POST,PUT,DELETE,HEAD,OPTIONS"
+	"notification": [
+		{
+			"name":"VBMS_SERVICE_TREATMENT_RECORDS_TOPIC",
+			"accept":"application/atom+xml",
+			"endpoint" : {
+				"type":"JMS",
+				"destination": {
+					"jmsConnectLibrary":"wlfullclient.jar",
+					"destinationJndiName":"jms.das.testQueue",
+					"connectionFactoryJndiName":"jms.das.QueueConnectionFactory",
+					"java.naming.factory.initial":"weblogic.jndi.WLInitialContextFactory",
+					"java.naming.security.principal":"weblogic",
+					"java.naming.security.credentials":"weblogic1",
+					"java.naming.provider.url":"t3://localhost:7001"
+				}
+			}
+		},
+		{
+			"name":"VBMS_CPEXAMS_TOPIC",
+			"accept":"application/atom+xml",
+			"endpoint" : {
+				"type":"JMS",
+				"destination": {
+					"jmsConnectLibrary":"wlfullclient.jar",
+					"destinationJndiName":"jms.das.testQueue",
+					"connectionFactoryJndiName":"jms.das.QueueConnectionFactory",
+					"java.naming.factory.initial":"weblogic.jndi.WLInitialContextFactory",
+					"java.naming.security.principal":"weblogic",
+					"java.naming.security.credentials":"weblogic1",
+					"java.naming.provider.url":"t3://localhost:7001"
+				}
+			}
+		}
+	],
+	"globalSubscriptions": {
+		"disabilityBenefitsQuestionnaires" : [
+			{ "name": "VBMS_CPEXAMS_TOPIC" }
+		]
 	},
-	"debug": true,
-	"stmt": {
-		"aun" : "SELECT TEXT as AUN FROM TEST WHERE TEST.TEST_ID=:1",
-		"aunEx" : "select d.DOMAIN_ID from MPI as m, DOMAIN_ID as d where m.SSN=:1 and m.CORRELATED_ID = d.CORRELATED_ID and d.DOMAIN = ‘HA.OSD.MIL/AHLTA’"
-	}
+	"ecrud": {
+		"url":"http://localhost:3001/core"
+	},
+	"debug": true
 }

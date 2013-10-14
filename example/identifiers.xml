@@ -1,0 +1,32 @@
+<identifier:Identifier xmlns:vler="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/vler" xmlns:nc="http://niem.gov/niem/niem-core/2.0" 
+	xmlns:identifier="http://vler.va.gov/vler/schemas/internal/identifier" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:s="http://niem.gov/niem/structures/2.0">
+	<identifier:CommonData>
+		<vler:Client s:id="client">
+			<vler:ClientIdentifier>
+				<!-- SSN -->
+				<nc:IdentificationID>123456789</nc:IdentificationID>
+				<vler:AssigningAuthority>2.16.840.1.113883.4.1</vler:AssigningAuthority>
+			</vler:ClientIdentifier>
+			<vler:ClientIdentifier>
+				<!-- AUN -->
+				<nc:IdentificationID>12341234</nc:IdentificationID>
+				<vler:AssigningAuthority>2.16.840.1.113883.3.275</vler:AssigningAuthority>
+			</vler:ClientIdentifier>
+			<nc:RoleOfPersonReference s:ref="one"/>
+		</vler:Client>
+		<nc:Person s:id="one">
+			<nc:PersonBirthDate>
+				<nc:Date>1940-08-09</nc:Date>
+			</nc:PersonBirthDate>
+			<nc:PersonName>
+				<nc:PersonGivenName>Julian</nc:PersonGivenName>
+				<nc:PersonMiddleName>J</nc:PersonMiddleName>
+				<nc:PersonSurName>Jewel</nc:PersonSurName>
+			</nc:PersonName>
+			<nc:PersonSexCode>M</nc:PersonSexCode>
+			<nc:PersonSSNIdentification>
+				<nc:IdentificationID>123456789</nc:IdentificationID>
+			</nc:PersonSSNIdentification>
+		</nc:Person>
+	</identifier:CommonData>
+</identifier:Identifier>

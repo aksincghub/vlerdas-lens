@@ -1,12 +1,12 @@
 {
-  "name": "pix",
+  "name": "lens",
   "version": "0.1.0",
-  "description": "Patient Identifier Cross Reference",
+  "description": "Life Event Notification Service",
   "keywords": [
-    "pix",
-    "mvi",
-    "cross reference",
-    "oracle"
+    "lens",
+    "notification",
+    "jms",
+    "java"
   ],
   "author": "Julian Jewel <julian@julianjewel.com>",
   "main": "./bin/server.js",
@@ -15,15 +15,20 @@
   },
   "dependencies": {
     "config": ">=0.4.30",
-    "express": ">=3.4.0",
     "underscore": ">=1.5.2",
-	"generic-pool":"2.0.4",
-	"oracle": "0.3.4"
+    "hashmap": ">=0.9.3",
+    "java": ">=0.2.5",
+    "JSONPath": ">=0.9.1",
+    "nodejms": ">=0.1.2",
+    "redis": ">=0.8.6",
+    "request": ">=2.27.0",
+    "string": ">=1.6.0",
+    "vcommons": ">=0.1.0"
   },
   "devDependencies": {
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/department-of-veterans-affairs/vlerdas-pix.git"
+    "url": "git://github.com/department-of-veterans-affairs/vlerdas-lens.git"
   }
 }
