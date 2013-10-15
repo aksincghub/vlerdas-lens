@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+    xmlns:pr="http://vler.va.gov/vler/schemas/health/clinicalDocuments/clinicalAssessments/cpExams/1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2005/Atom http://vler.va.gov/vler/schemas/atom/2005/vler/0.2/atom.xsd">
+    <title type="text">VLER DAS Life Event Notification Service</title>    
+    <subtitle type="text">DBQ Status Is Completed</subtitle>
+    <id>10000</id>
+    <updated>2013-05-10T14:27:15-04:00</updated>
+    <generator version="1.0">VLER DAS Life Event Notification Service</generator>
+    <author>
+        <name>VLER DAS Life Event Notification Service</name>
+    </author>
+    <entry>
+        <title>Ankle Conditions Form</title>
+        <id>10000</id>
+        <published>2012-08-09T16:27:38-05:00</published>
+        <updated>2012-08-09T16:27:38-05:00</updated>
+        <author>
+            <name>Frank A James</name>
+        </author>
+        <content type="application/xml">insert content here</content>
+        <link
+            href="https://localhost::3002/core/fs/abcd1234abcd1234abcd1234"
+            hreflang="en" length="1000000" rel="enclosure"
+            title="Subject Document" type="application/xml"/>
+    </entry>
+    <entry>
+        <title>Ankle Conditions Form2</title>
+        <id>100002</id>
+        <published>2012-08-09T16:27:38-05:00</published>
+        <updated>2012-08-09T16:27:38-05:00</updated>
+        <author>
+            <name>Frank A James</name>
+        </author>
+        <content type="application/xml">insert content here2</content>
+        <link
+            href="https://localhost::3002/core/fs/abcd1234abcd1234abcd1235"
+            hreflang="en" length="1000000" rel="enclosure"
+            title="Subject Document" type="application/xml"/>
+    </entry>
+</feed>

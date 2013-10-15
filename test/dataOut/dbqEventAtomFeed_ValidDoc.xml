@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+    xmlns:pr="http://vler.va.gov/vler/schemas/health/clinicalDocuments/clinicalAssessments/cpExams/1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2005/Atom http://vler.va.gov/vler/schemas/atom/2005/vler/0.2/atom.xsd">
+    <title type="text">VLER DAS Life Event Notification Service</title>    
+    <subtitle type="text">DBQ Status Is Completed</subtitle>
+    <id>10000</id>
+    <updated>2013-05-10T14:27:15-04:00</updated>
+    <generator version="1.0">VLER DAS Life Event Notification Service</generator>
+    <author>
+        <name>VLER DAS Life Event Notification Service</name>
+    </author>
+    <entry>
+        <title>Ankle Conditions Form</title>
+        <id>10000</id>
+        <published>2012-08-09T16:27:38-05:00</published>
+        <updated>2012-08-09T16:27:38-05:00</updated>
+        <author>
+            <name>Frank A James</name>
+        </author>
+        <content type="application/xml">
+            <pr:Preview version="1.0" xsi:schemaLocation="http://vler.va.gov/vler/schemas/health/clinicalDocuments/clinicalAssessments/cpExams/1.0 ../XMLschemas/preview/Preview-cpExams.xsd">
+                <nc:Document
+                    xmlns:ac="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/ac"
+                    xmlns:cld="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/cld"
+                    xmlns:nc="http://niem.gov/niem/niem-core/2.0"
+                    xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0"
+                    xmlns:s="http://niem.gov/niem/structures/2.0" xmlns:vler="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/vler">
+                    <nc:DocumentCreationDate>
+                        <nc:DateTime>2012-08-09T16:27:38-05:00</nc:DateTime>
+                    </nc:DocumentCreationDate>
+                    <nc:DocumentDescriptionText>Ankle Conditions Form</nc:DocumentDescriptionText>
+                    <nc:DocumentIdentification>
+                        <nc:IdentificationID>10000</nc:IdentificationID>
+                    </nc:DocumentIdentification>
+                    <nc:DocumentStatus>
+                        <nc:StatusText>Complete</nc:StatusText>
+                    </nc:DocumentStatus>
+                    <nc:DocumentTitleText>Ankle Conditions Form</nc:DocumentTitleText>
+                </nc:Document>
+                <vler:Client s:id="client"
+                    xmlns:ac="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/ac"
+                    xmlns:cld="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/cld"
+                    xmlns:nc="http://niem.gov/niem/niem-core/2.0"
+                    xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0"
+                    xmlns:s="http://niem.gov/niem/structures/2.0" xmlns:vler="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/vler">
+                    <vler:ClientIdentifier>
+                        <nc:IdentificationID>123456789</nc:IdentificationID>
+                        <vler:AssigningAuthority>USVHA</vler:AssigningAuthority>
+                    </vler:ClientIdentifier>
+                    <vler:ClientStatus>
+                        <vler:ClientStatusText>OK</vler:ClientStatusText>
+                    </vler:ClientStatus>
+                    <nc:RoleOfPersonReference s:ref="one"/>
+                </vler:Client>
+                <vler:ServiceProvider s:id="service_provider"
+                    xmlns:ac="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/ac"
+                    xmlns:cld="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/cld"
+                    xmlns:nc="http://niem.gov/niem/niem-core/2.0"
+                    xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0"
+                    xmlns:s="http://niem.gov/niem/structures/2.0" xmlns:vler="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/vler">
+                    <vler:PersonIdentifier>
+                        <nc:IdentificationID>
+                    02384902409002020209999
+                </nc:IdentificationID>
+                        <nc:IdentificationJurisdictionText>Harris Form System</nc:IdentificationJurisdictionText>
+                    </vler:PersonIdentifier>
+                    <vler:ServiceProviderRoleTitle>Physician</vler:ServiceProviderRoleTitle>
+                    <nc:RoleOfPersonReference s:ref="two"/>
+                </vler:ServiceProvider>
+                <nc:Person s:id="two"
+                    xmlns:ac="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/ac"
+                    xmlns:cld="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/cld"
+                    xmlns:nc="http://niem.gov/niem/niem-core/2.0"
+                    xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0"
+                    xmlns:s="http://niem.gov/niem/structures/2.0" xmlns:vler="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/vler">
+                    <nc:PersonName>
+                        <nc:PersonGivenName>
+                    Frank
+                </nc:PersonGivenName>
+                        <nc:PersonMiddleName>
+                    A
+                </nc:PersonMiddleName>
+                        <nc:PersonSurName>
+                    James
+                </nc:PersonSurName>
+                    </nc:PersonName>
+                </nc:Person>
+                <nc:Person s:id="one"
+                    xmlns:ac="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/ac"
+                    xmlns:cld="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/cld"
+                    xmlns:nc="http://niem.gov/niem/niem-core/2.0"
+                    xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0"
+                    xmlns:s="http://niem.gov/niem/structures/2.0" xmlns:vler="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/vler">
+                    <nc:PersonBirthDate>
+                        <nc:Date>
+                    1980-12-08
+                </nc:Date>
+                    </nc:PersonBirthDate>
+                    <nc:PersonName>
+                        <nc:PersonGivenName>
+                    CHDRAMDDEV
+                </nc:PersonGivenName>
+                        <nc:PersonMiddleName/>
+                        <nc:PersonSurName>
+                    Patone
+                </nc:PersonSurName>
+                    </nc:PersonName>
+                    <nc:PersonSexCode>M</nc:PersonSexCode>
+                    <nc:PersonSSNIdentification>
+                        <nc:IdentificationID>
+                    666580001
+                </nc:IdentificationID>
+                    </nc:PersonSSNIdentification>
+                </nc:Person>
+                <nc:Facility
+                    xmlns:ac="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/ac"
+                    xmlns:cld="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/cld"
+                    xmlns:nc="http://niem.gov/niem/niem-core/2.0"
+                    xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0"
+                    xmlns:s="http://niem.gov/niem/structures/2.0" xmlns:vler="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/vler">
+                    <nc:FacilityIdentification>
+                        <nc:IdentificationID>644</nc:IdentificationID>
+                        <nc:IdentificationJurisdictionText>PHOENIX.MED.VA.GOV</nc:IdentificationJurisdictionText>
+                    </nc:FacilityIdentification>
+                    <nc:FacilityName>CARL T. HAYDEN VA MEDICAL CENTER</nc:FacilityName>
+                </nc:Facility>
+                <vler:ServiceProviderClientAssociation
+                    xmlns:ac="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/ac"
+                    xmlns:cld="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/cld"
+                    xmlns:nc="http://niem.gov/niem/niem-core/2.0"
+                    xmlns:niem-xsd="http://niem.gov/niem/proxy/xsd/2.0"
+                    xmlns:s="http://niem.gov/niem/structures/2.0" xmlns:vler="http://va.gov/vler/schemas/vlerSupersetSchema/0.7/vler">
+                    <vler:ServiceProviderReference s:ref="service_provider"/>
+                    <vler:ClientReference s:ref="client"/>
+                </vler:ServiceProviderClientAssociation>
+                <pr:ClaimNumber>2012-0000353</pr:ClaimNumber>
+            </pr:Preview>
+        </content>
+        <link
+            href="https://localhost/das/v1/anyAA/anyID/health/clinicalDocuments/clinicalAssessments/cpExams/2.16.840.1.113883.4.349_7.77.777.7.777777.7.777_10000.xml"
+            hreflang="en" length="1000000" rel="enclosure"
+            title="Subject Document" type="application/xml"/>
+    </entry>
+</feed>

@@ -1,0 +1,11 @@
+{
+  "root": {
+    "parent": {
+      "child1": { "text1": "value1" },
+      "child2": {
+        "text2": "value2",
+        "text3": "value3"
+      }
+    }
+  }
+}

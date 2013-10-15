@@ -1,4 +1,9 @@
 {
+	"feed": {
+		"gridfsBasehref": "http://localhost:3001/core/fs/",
+		"title": "VA VLER DAS Life Event Notification Service (LENS)",
+		"version": "0.1"
+	},
 	"collection2path": {
 		"serviceTreatmentRecords" : "health/clinicalDocuments/historicalData/medicalHistory/serviceTreatmentRecords",
 		"disabilityBenefitsQuestionnaires" : "health/clinicalDocuments/clinicalAssessments/cpExams"

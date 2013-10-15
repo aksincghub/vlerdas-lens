@@ -5,15 +5,23 @@
  *
  */
 var config = require('config');
+// Export config, so that it can be used anywhere
+module.exports.config = config;
+
 var redis = require('redis');
 var _ = require('underscore');
 var S = require('string');
 var fs = require('fs');
 var jsonpath = require('JSONPath');
 var request = require('request');
+UTIL = {};
+UTIL.XML = require('../node_modules/vcommons/xml/js-ObjTree');
+// Globally available for conversion
+var xotree = new UTIL.XML.ObjTree();
+var dom = require('xmldom').DOMParser;
 
-// Export config, so that it can be used anywhere
-module.exports.config = config;
+var feedTransformer = require('../lib/feedTransformer.js');
+
 var NodeJms= require('nodejms');
 
 var HashMap = require('hashmap').HashMap;
@@ -98,8 +106,15 @@ function callback(err, evt){
 					var notificationConfig = notificationConfigMap.get(notificationConfigName);
 					var toSend = JSON.stringify(jsonObj.o);
 					if(S(notificationConfig.accept).startsWith("application/atom+xml")) {
-						// TODO: John May
-						//toSend = json2Atom(jsonObj.o);
+						// TODO: Remove hardcoding
+						var jsonFeed;
+						if(collection == 'disabilityBenefitsQuestionnaires')
+							jsonFeed = feedTransformer.niemDocToJsonFeed(toSend, "dbq", jsonObj.o._id, jsonObj.o.uploadDate);
+						else if(collection =='serviceTreatmentRecords')
+							jsonFeed = feedTransformer.niemDocToJsonFeed(toSend, "str", jsonObj.o._id, jsonObj.o.uploadDate);
+						else if(collection =='electronicCaseFiles')
+							jsonFeed = feedTransformer.niemDocToJsonFeed(toSend, "ecft", jsonObj.o._id, jsonObj.o.uploadDate);
+						toSend = xotree.writeXML(jsonFeed);
 					}
 					if(S(notificationConfig.endpoint.type).startsWith('JMS')) {
 						var jmsClient = jmsClients.get(notificationConfig.name);

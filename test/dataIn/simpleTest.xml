@@ -1,0 +1,11 @@
+<root>
+<parent>
+<child1>
+<text1>value1</text1>
+</child1>
+<child2>
+<text2>value2</text2>
+<text3>value3</text3>
+</child2>
+</parent>
+</root>
