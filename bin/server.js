@@ -26,13 +26,19 @@ var NodeJms= require('nodejms');
 
 var HashMap = require('hashmap').HashMap;
 var jmsClients = new HashMap();
+var redisClients = new HashMap();
 var notificationConfigMap = new HashMap();
 
 for (var i = 0; i < config.notification.length; i++) {
 	notificationConfigMap.set(config.notification[i].name, config.notification[i]);
 	// Set JMS Client separately for convenient access
-	var jmsClient = new NodeJms(__dirname + "/" + config.notification[i].endpoint.destination.jmsConnectLibrary, config.notification[i].endpoint.destination); 
-	jmsClients.set(config.notification[i].name, jmsClient);
+	if(S(config.notification[i].endpoint.type).startsWith('JMS')) {
+		var jmsClient = new NodeJms(__dirname + "/" + config.notification[i].endpoint.destination.jmsConnectLibrary, config.notification[i].endpoint.destination); 
+		jmsClients.set(config.notification[i].name, jmsClient);
+	} else if (S(config.notification[i].endpoint.type).startsWith('REDIS')) {
+		var redisClient = redis.createClient(config.notification[i].endpoint.destination.port, config.notification[i].endpoint.destination.host);
+		redisClients.set(config.notification[i].name, redisClient);
+	}
 }
 var client = redis.createClient(config.listener.redis.port || '6379', config.listener.redis.host || 'localhost');
 // Do client.auth
@@ -74,7 +80,7 @@ function callback(err, evt){
 		var ssn = jsonpath.eval(jsonObj.o, '$..nc:PersonSSNIdentification.nc:IdentificationID');
 		// Check whether the SSN has a subscription
 		// Query CRUD - http://localhost:3001/core/serviceTreatmentRecords.subscriptions?query={"subscription:Subscription.subscription:CommonData.nc:Person.nc:PersonSSNIdentification.nc:IdentificationID":"987654321"}
-		
+
 		request(config.ecrud.url + '/'
 			 + collection + '.subscriptions?query={"subscription:Subscription.subscription:CommonData.nc:Person.nc:PersonSSNIdentification.nc:IdentificationID":"'
 			 + ssn + '"}', function (error, response, body) {
@@ -116,6 +122,7 @@ function callback(err, evt){
 							jsonFeed = feedTransformer.niemDocToJsonFeed(toSend, "ecft", jsonObj.o._id, jsonObj.o.uploadDate);
 						toSend = xotree.writeXML(jsonFeed);
 					}
+					
 					if(S(notificationConfig.endpoint.type).startsWith('JMS')) {
 						var jmsClient = jmsClients.get(notificationConfig.name);
 						jmsClient.sendMessageAsync(toSend, "text", null, function (err) {
@@ -126,12 +133,38 @@ function callback(err, evt){
 							if(config.debug) {
 								console.log('Sent Message to JMS Queue:' + notificationConfig.endpoint.destination.destinationJndiName + ' Message:' + toSend);
 							}
-							// Listen again
+							// Add the document transfer log to subscriptions. Some applications might wish to track the documents that were published
+						
+							if(!_.isUndefined(config.trackSubscriptions[collection])) {
+								trackNotifications(collection, json, jsonObj, function(err) {
+									if(err) {
+										processErrorAndRollback(err, evt);
+										return;
+									}
+									client.blpop(config.listener.channel, '0', callback);
+								});
+							} else {
+								client.blpop(config.listener.channel, '0', callback);
+								return;
+							}
+						
+						});
+					} else if (S(notificationConfig.endpoint.type).startsWith('REDIS')) {
+						var redisClient = redisClients.get(notificationConfig.name);
+						redisClient.lpush(notificationConfig.endpoint.destination.channel, toSend);
+						if(!_.isUndefined(config.trackSubscriptions[collection])) {
+							trackNotifications(collection, json, jsonObj, function(err) {
+								if(err) {
+									processErrorAndRollback(err, evt);
+									return;
+								}
+								client.blpop(config.listener.channel, '0', callback);
+							});
+						} else {
 							client.blpop(config.listener.channel, '0', callback);
 							return;
-						});
-					}
-					
+						}
+					} 
 				}
 			} else {
 				processErrorAndRollback(err, evt);
@@ -141,6 +174,47 @@ function callback(err, evt){
 		
 	}
 }
+
+function trackNotifications(collection, subscription, data, callback) {
+	if( subscription.length > 0 ) {
+		// Add the document log to all subscribers
+		for(var i=0; i<subscription.length; i++) {
+			var subData = subscription[i];
+			if(!_.isUndefined(subData)) {
+				if(_.isUndefined(subData.track)) {
+					subData.track = [];
+				}
+				var track = {};
+				track.date = new Date();
+				track.document = data;
+				subData.track[subData.track.length] = track;
+				// TODO: Implement Retry
+				var id = subData._id;
+				delete subData._id;
+				request({
+					url : config.ecrud.url + '/' + collection + '.subscriptions' + '/' + id,
+					headers : {
+						"Content-Type" : "application/json"
+					},
+					method : 'PUT',
+					body : JSON.stringify(subData)
+				}, function (error, response, body) {
+					console.log(response.statusCode);
+					if (!error && response.statusCode == 201) {
+						// Listen again
+						callback(null);
+					} else {
+						if(config.debug)
+							console.log(error);
+						callback(new Error("Error could not store Subscription in CRUD. Error:" + error));
+					}
+				});
+
+			}
+		}
+	}
+}
+
 // Start the process
 client.blpop(config.listener.channel, '0', callback);
 

@@ -17,10 +17,22 @@
 	},
 	"notification": [
 		{
+			"name":"VBMS_SERVICE_TREATMENT_RECORDS_REDIS_TOPIC",
+			"accept":"application/atom+xml",
+			"endpoint" : {
+				"type":"REDIS",
+				"destination": {
+					"channel":"redis.vbms.testNotification",
+					"host":"127.0.0.1",
+					"port":"6379"
+				}
+			}
+		},
+		{
 			"name":"VBMS_SERVICE_TREATMENT_RECORDS_TOPIC",
 			"accept":"application/atom+xml",
 			"endpoint" : {
-				"type":"JMS",
+				"type":"NOT_JMS",
 				"destination": {
 					"jmsConnectLibrary":"wlfullclient.jar",
 					"destinationJndiName":"jms.das.testQueue",
@@ -36,7 +48,7 @@
 			"name":"VBMS_CPEXAMS_TOPIC",
 			"accept":"application/atom+xml",
 			"endpoint" : {
-				"type":"JMS",
+				"type":"NOT_JMS",
 				"destination": {
 					"jmsConnectLibrary":"wlfullclient.jar",
 					"destinationJndiName":"jms.das.testQueue",
@@ -53,6 +65,9 @@
 		"disabilityBenefitsQuestionnaires" : [
 			{ "name": "VBMS_CPEXAMS_TOPIC" }
 		]
+	},
+	"trackSubscriptions": {
+		"serviceTreatmentRecords" : true
 	},
 	"ecrud": {
 		"url":"http://localhost:3001/core"
