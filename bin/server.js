@@ -14,32 +14,47 @@ var S = require('string');
 var fs = require('fs');
 var jsonpath = require('JSONPath');
 var request = require('request');
+var Log = require('vcommons').log;
+var logger = Log.getLogger('LENS', config.log);
+
 UTIL = {};
 UTIL.XML = require('../node_modules/vcommons/xml/js-ObjTree');
 // Globally available for conversion
 var xotree = new UTIL.XML.ObjTree();
 var dom = require('xmldom').DOMParser;
-
+// Feed transformer created by John May
 var feedTransformer = require('../lib/feedTransformer.js');
-
+// For JMS messaging
 var NodeJms= require('nodejms');
-
+// Cache Clients
 var HashMap = require('hashmap').HashMap;
 var jmsClients = new HashMap();
 var redisClients = new HashMap();
 var notificationConfigMap = new HashMap();
 
+logger.trace('Setting up Configuration Cache');
 for (var i = 0; i < config.notification.length; i++) {
+	logger.trace('Setting up Configuration Cache:', config.notification[i]);
 	notificationConfigMap.set(config.notification[i].name, config.notification[i]);
 	// Set JMS Client separately for convenient access
 	if(S(config.notification[i].endpoint.type).startsWith('JMS')) {
+		logger.trace('Trying to initialize JMS Environment with:', __dirname + "/" + config.notification[i].endpoint.destination.jmsConnectLibrary, config.notification[i].endpoint.destination);
+		
 		var jmsClient = new NodeJms(__dirname + "/" + config.notification[i].endpoint.destination.jmsConnectLibrary, config.notification[i].endpoint.destination); 
 		jmsClients.set(config.notification[i].name, jmsClient);
+		
+		logger.info('Established JMS Configuration Cache:', config.notification[i].name);
 	} else if (S(config.notification[i].endpoint.type).startsWith('REDIS')) {
+		logger.trace('Trying to initialize REDIS Environment with:', config.notification[i].endpoint.destination.port, config.notification[i].endpoint.destination.host);
+		
 		var redisClient = redis.createClient(config.notification[i].endpoint.destination.port, config.notification[i].endpoint.destination.host);
 		redisClients.set(config.notification[i].name, redisClient);
+		
+		logger.info('Established Redis Configuration Cache:', config.notification[i].name);
 	}
 }
+
+logger.info('Setting up Redis Connection to ' + config.listener.redis.port || '6379', config.listener.redis.host || 'localhost');
 var client = redis.createClient(config.listener.redis.port || '6379', config.listener.redis.host || 'localhost');
 // Do client.auth
 

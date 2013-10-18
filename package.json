@@ -1,6 +1,6 @@
 {
   "name": "vlens",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Life Event Notification Service",
   "keywords": [
     "lens",
@@ -23,7 +23,7 @@
     "redis": ">=0.8.6",
     "request": ">=2.27.0",
     "string": ">=1.6.0",
-    "vcommons": ">=0.1.5",
+    "vcommons": ">=0.1.6",
 	"xmldom": ">=0.1.16"
   },
   "devDependencies": {
