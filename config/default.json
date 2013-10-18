@@ -68,7 +68,14 @@
 		"serviceTreatmentRecords" : true
 	},
 	"ecrud" : {
-		"url" : "http://localhost:3001/core"
+		"url" : "http://localhost:3001/core",
+		"retry": {
+			 "retries": 5,
+			 "factor": 3,
+			 "minTimeout": 1000,
+			 "maxTimeout": 60000,
+			 "randomize": true
+		}
 	},
 	"log" : {
 		"console" : {

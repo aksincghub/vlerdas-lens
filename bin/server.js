@@ -24,6 +24,7 @@ var xotree = new UTIL.XML.ObjTree();
 var dom = require('xmldom').DOMParser;
 // Feed transformer created by John May
 var feedTransformer = require('../lib/feedTransformer.js');
+var retry = require('retry');
 // For JMS messaging
 var NodeJms= require('nodejms');
 // Cache Clients
@@ -59,13 +60,12 @@ var client = redis.createClient(config.listener.redis.port || '6379', config.lis
 // Do client.auth
 
 function processErrorAndRollback(err, evt) {
-	if(config.debug) {
-		console.log(err);
-	}
+	logger.error('Error occured during processing of event:' + err);
 	// Something goes wrong - push event back to queue
 	client.lpush(evt[0], evt[1]);
 	// Listen again
 	client.blpop(config.listener.channel, '0', callback);
+	logger.error('Rolled back element to channel:' + config.listener.channel);
 }
 
 function callback(err, evt){
@@ -80,76 +80,99 @@ function callback(err, evt){
 		return;
 	}	
 	if(object) {
-		
-		if(config.debug) {
-			console.log("Evicted from Queue:" + channel + " Object: " + object);
-		}
+		logger.trace("Evicted from Queue:" + channel + " Object: " + object);
 		
 		var jsonObj = JSON.parse(object);
 		var collection = jsonObj.ns;
 		var record = jsonObj.o;
 		
+		logger.trace("Checking if there is a global subscription for collection: ", collection);
 		// Check global subscriptions (subscribed to all changes in a collection)
 		var globalSubscription = config.globalSubscriptions[collection];
+		logger.trace("Found global subscription for collection: ", globalSubscription);
 		// Get SSN
 		var ssn = jsonpath.eval(jsonObj.o, '$..nc:PersonSSNIdentification.nc:IdentificationID');
 		// Check whether the SSN has a subscription
 		// Query CRUD - http://localhost:3001/core/serviceTreatmentRecords.subscriptions?query={"subscription:Subscription.subscription:CommonData.nc:Person.nc:PersonSSNIdentification.nc:IdentificationID":"987654321"}
 
-		request(config.ecrud.url + '/'
-			 + collection + '.subscriptions?query={"subscription:Subscription.subscription:CommonData.nc:Person.nc:PersonSSNIdentification.nc:IdentificationID":"'
-			 + ssn + '"}', function (error, response, body) {
-			if (!error && response.statusCode == 200) {
-				var json = JSON.parse(body);
-				json = json ? json : {};
-				if (json.length > 0) {
-					// Get the Subscriber ID
-					for(var i=0; i<json.length; i++) {
-						var subData = json[i];
-						var subId = subData['subscription:Subscription']['subscription:CommonData']['vler:Subscription']['vler:Addressing']['vler:ReplyTo']['vler:SubscriberId'];
-						var jsonSubId = JSON.parse('[{"name":"' + subId + '"}]');
-						if(_.isUndefined(globalSubscription)) {
-							globalSubscription = jsonSubId;
-						} else {
-							globalSubscription[globalSubscription.length] = jsonSubId; 
-						}
-					}
-				}
+		var operation = retry.operation(config.ecrud.retry);
+		operation.attempt(function(currentAttempt) {
+			logger.info('Attempt ' + currentAttempt + ':' + config.ecrud.url + '/'
+				 + collection + '.subscriptions?query={"subscription:Subscription.subscription:CommonData.nc:Person.nc:PersonSSNIdentification.nc:IdentificationID":"'
+				 + ssn + '"}');	 
+			request(config.ecrud.url + '/'
+				 + collection + '.subscriptions?query={"subscription:Subscription.subscription:CommonData.nc:Person.nc:PersonSSNIdentification.nc:IdentificationID":"'
+				 + ssn + '"}', function (error, response, body) {
 				
-				if (_.isUndefined(globalSubscription) || _.isEmpty(globalSubscription)) {
-					// No configuration
-					// Listen again
-					client.blpop(config.listener.channel, '0', callback);
+				if (operation.retry(err)) {
+					logger.error('Retry failed with error:', error, 'Attempt:', currentAttempt);
 					return;
 				}
-				for (var i = 0; i < globalSubscription.length; i++) {
-					var notificationConfigName = globalSubscription[i].name;
-					var notificationConfig = notificationConfigMap.get(notificationConfigName);
-					var toSend = JSON.stringify(jsonObj.o);
-					if(S(notificationConfig.accept).startsWith("application/atom+xml")) {
-						// TODO: Remove hardcoding
-						var jsonFeed;
-						if(collection == 'disabilityBenefitsQuestionnaires')
-							jsonFeed = feedTransformer.niemDocToJsonFeed(toSend, "dbq", jsonObj.o._id, jsonObj.o.uploadDate);
-						else if(collection =='serviceTreatmentRecords')
-							jsonFeed = feedTransformer.niemDocToJsonFeed(toSend, "str", jsonObj.o._id, jsonObj.o.uploadDate);
-						else if(collection =='electronicCaseFiles')
-							jsonFeed = feedTransformer.niemDocToJsonFeed(toSend, "ecft", jsonObj.o._id, jsonObj.o.uploadDate);
-						toSend = xotree.writeXML(jsonFeed);
+				
+				if (!error && response.statusCode == 200) {
+					var json = JSON.parse(body);
+					json = json ? json : {};
+					if (json.length > 0) {
+						// Get the Subscriber ID
+						for(var i=0; i<json.length; i++) {
+							var subData = json[i];
+							var subId = subData['subscription:Subscription']['subscription:CommonData']['vler:Subscription']['vler:Addressing']['vler:ReplyTo']['vler:SubscriberId'];
+							var jsonSubId = JSON.parse('[{"name":"' + subId + '"}]');
+							if(_.isUndefined(globalSubscription)) {
+								globalSubscription = jsonSubId;
+							} else {
+								globalSubscription[globalSubscription.length] = jsonSubId; 
+							}
+						}
 					}
 					
-					if(S(notificationConfig.endpoint.type).startsWith('JMS')) {
-						var jmsClient = jmsClients.get(notificationConfig.name);
-						jmsClient.sendMessageAsync(toSend, "text", null, function (err) {
-							if(err) {
-								processErrorAndRollback(err, evt);
-								return;
-							}
-							if(config.debug) {
-								console.log('Sent Message to JMS Queue:' + notificationConfig.endpoint.destination.destinationJndiName + ' Message:' + toSend);
-							}
-							// Add the document transfer log to subscriptions. Some applications might wish to track the documents that were published
+					if (_.isUndefined(globalSubscription) || _.isEmpty(globalSubscription)) {
+						// No configuration
+						// Listen again
+						client.blpop(config.listener.channel, '0', callback);
+						return;
+					}
+					for (var i = 0; i < globalSubscription.length; i++) {
+						var notificationConfigName = globalSubscription[i].name;
+						var notificationConfig = notificationConfigMap.get(notificationConfigName);
+						var toSend = JSON.stringify(jsonObj.o);
+						if(S(notificationConfig.accept).startsWith("application/atom+xml")) {
+							var jsonFeed = feedTransformer.niemDocToJsonFeed(toSend, jsonObj.o._id, jsonObj.o.uploadDate);
+							toSend = xotree.writeXML(jsonFeed);
+						}
 						
+						if(S(notificationConfig.endpoint.type).startsWith('JMS')) {
+							var jmsClient = jmsClients.get(notificationConfig.name);
+							
+							
+							
+							jmsClient.sendMessageAsync(toSend, "text", null, function (err) {
+								if(err) {
+									processErrorAndRollback(err, evt);
+									return;
+								}
+								if(config.debug) {
+									console.log('Sent Message to JMS Queue:' + notificationConfig.endpoint.destination.destinationJndiName + ' Message:' + toSend);
+								}
+								// Add the document transfer log to subscriptions. Some applications might wish to track the documents that were published
+							
+								if(!_.isUndefined(config.trackSubscriptions[collection])) {
+									trackNotifications(collection, json, jsonObj, function(err) {
+										if(err) {
+											processErrorAndRollback(err, evt);
+											return;
+										}
+										client.blpop(config.listener.channel, '0', callback);
+									});
+								} else {
+									client.blpop(config.listener.channel, '0', callback);
+									return;
+								}
+							
+							});
+						} else if (S(notificationConfig.endpoint.type).startsWith('REDIS')) {
+							var redisClient = redisClients.get(notificationConfig.name);
+							redisClient.lpush(notificationConfig.endpoint.destination.channel, toSend);
 							if(!_.isUndefined(config.trackSubscriptions[collection])) {
 								trackNotifications(collection, json, jsonObj, function(err) {
 									if(err) {
@@ -162,31 +185,14 @@ function callback(err, evt){
 								client.blpop(config.listener.channel, '0', callback);
 								return;
 							}
-						
-						});
-					} else if (S(notificationConfig.endpoint.type).startsWith('REDIS')) {
-						var redisClient = redisClients.get(notificationConfig.name);
-						redisClient.lpush(notificationConfig.endpoint.destination.channel, toSend);
-						if(!_.isUndefined(config.trackSubscriptions[collection])) {
-							trackNotifications(collection, json, jsonObj, function(err) {
-								if(err) {
-									processErrorAndRollback(err, evt);
-									return;
-								}
-								client.blpop(config.listener.channel, '0', callback);
-							});
-						} else {
-							client.blpop(config.listener.channel, '0', callback);
-							return;
-						}
-					} 
+						} 
+					}
+				} else {
+					processErrorAndRollback(err, evt);
+					return;
 				}
-			} else {
-				processErrorAndRollback(err, evt);
-				return;
-			}
-		});		
-		
+			});		
+		});
 	}
 }
 
