@@ -66,7 +66,7 @@
 			</nc:PersonName>
 			<nc:PersonSexCode>M</nc:PersonSexCode>
 			<nc:PersonSSNIdentification>
-				<nc:IdentificationID>830981157</nc:IdentificationID>
+				<nc:IdentificationID>123456SSN</nc:IdentificationID>
 			</nc:PersonSSNIdentification>
 		</nc:Person>
 		<nc:Facility>
@@ -85,7 +85,7 @@
 		<nc:Attachment>
 			<nc:BinaryDescriptionText>Neck (Cervical Spine) Conditions (0960M-13)</nc:BinaryDescriptionText>
 			<nc:BinaryFormatStandardName>application/pdf</nc:BinaryFormatStandardName>
-			<nc:BinaryLocationURI>fileID</nc:BinaryLocationURI>
+			<nc:BinaryLocationURI>gridfs://soemeFileId</nc:BinaryLocationURI>
 			<!--GridFS pointer to binary PDF file  http://server:host/dbname/fs/fileId-->
 			<nc:BinarySizeValue>127306</nc:BinarySizeValue>
 			<nc:BinaryCategoryText>Neck (Cervical Spine) Conditions (0960M-13)</nc:BinaryCategoryText>
