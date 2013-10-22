@@ -8,7 +8,6 @@ var config = require('config');
 // Export config, so that it can be used anywhere
 module.exports.config = config;
 
-var redis = require('haredis');
 var _ = require('underscore');
 var S = require('string');
 var fs = require('fs');
@@ -48,9 +47,9 @@ client.auth(config.redis.auth, function (err) {
 	}
 	logger.info('Authenticated ' +  config.redis.host + ':' + config.redis.port);
 	// Start the process
-	logger.info('Redis Listening to ' + stener.channel);
-	logger.trace('Popping Data from ' + config.listener.channel + ' and calling callback');
-	client.blpop(config.listener.channel, '0', callback);
+	logger.info('Redis Listening to ' + config.redis.channel);
+	logger.trace('Popping Data from ' + config.redis.channel + ' and calling callback');
+	client.blpop(config.redis.channel, '0', callback);
 
 	logger.info(('Listening on Redis Channel-' + (config.redis.host || 'localhost') + ':' + (config.redis.port || '6379')));
 
@@ -63,8 +62,8 @@ function processErrorAndRollback(err, evt) {
     // Something goes wrong - push event back to queue
     client.lpush(evt[0], evt[1]);
     // Listen again
-    client.blpop(config.listener.channel, '0', callback);
-    logger.error('Rolled back element to channel:' + config.listener.channel);
+    client.blpop(config.redis.channel, '0', callback);
+    logger.error('Rolled back element to channel:' + config.redis.channel);
 }
 
 function callback(err, evt) {
@@ -141,8 +140,8 @@ function callback(err, evt) {
                         // No configuration
                         // Listen again
                         logger.trace('Ignoring message', evt[1]);
-                        logger.info('Retrieving next message from channel', config.listener.channel);
-                        client.blpop(config.listener.channel, '0', callback);
+                        logger.info('Retrieving next message from channel', config.redis.channel);
+                        client.blpop(config.redis.channel, '0', callback);
                         return;
                     }
                     for (var i = 0; i < globalSubscription.length; i++) {
@@ -175,12 +174,12 @@ function callback(err, evt) {
 									processErrorAndRollback(err, evt);
 									return;
 								}
-								logger.info('Retrieving next message from channel', config.listener.channel);
-								client.blpop(config.listener.channel, '0', callback);
+								logger.info('Retrieving next message from channel', config.redis.channel);
+								client.blpop(config.redis.channel, '0', callback);
 							});
 						} else {
-							logger.info('No tracking for notification defined. Retrieving next message from channel', config.listener.channel);
-							client.blpop(config.listener.channel, '0', callback);
+							logger.info('No tracking for notification defined. Retrieving next message from channel', config.redis.channel);
+							client.blpop(config.redis.channel, '0', callback);
 							return;
 						}
 					}
@@ -247,7 +246,7 @@ function trackNotifications(collection, subscription, data, callback) {
 process.on('uncaughtException', function (err) {
     logger.error('Caught exception: ' + err);
 	// Continue listening
-	client.blpop(config.listener.channel, '0', callback);
+	client.blpop(config.redis.channel, '0', callback);
 });
 // Ctrl-C Shutdown
 process.on('SIGINT', function () {

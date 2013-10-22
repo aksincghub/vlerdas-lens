@@ -14,9 +14,7 @@
 	"redis" : {
 		"host" : "127.0.0.1",
 		"port" : "6379",
-		"auth" : "pass1"
-	},
-	"listener" : {
+		"auth" : "pass1",
 		"channel" : "core.6379"
 	},
 	"notification" : [{
