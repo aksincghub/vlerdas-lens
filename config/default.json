@@ -4,7 +4,8 @@
 		"title" : "VA VLER DAS Life Event Notification Service (LENS)",
 		"version" : "0.1",
 		"gridfsPrefix":"gridfs://",
-		"atomJsonTemplate":"./lib/notificationAtomFeedOneEntryOneLink_template.json"
+		"atomJsonTemplate":"./lib/notificationAtomFeedOneEntryOneLink_template.json",
+		"redirectHref" : "http://localhost:1234?redirectURL="
 	},
 	"collection2path" : {
 		"serviceTreatmentRecords" : "health/clinicalDocuments/historicalData/medicalHistory/serviceTreatmentRecords",
