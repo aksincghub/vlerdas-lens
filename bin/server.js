@@ -18,6 +18,8 @@ var logger = Log.getLogger('LENS', config.log);
 var JsonFormatter = require('vcommons').jsonFormatter;
 var HashMap = require('hashmap').HashMap;
 var CryptoJS = require("crypto-js");
+var cluster = require("cluster");
+var numCPUs = require('os').cpus().length;
 
 UTIL = {};
 UTIL.XML = require('vcommons').objTree;
@@ -36,25 +38,42 @@ for (var i = 0; i < config.notification.length; i++) {
     notificationConfigMap.set(config.notification[i].name, config.notification[i]);
 }
 
-logger.info('Setting up Redis Connection to ', config.redis.port, config.redis.host);
-var redis = require("redis");
-var client = redis.createClient(config.redis.port, config.redis.host);
+if (cluster.isMaster) {
+  // Fork workers.
+  for (var i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
 
-logger.trace('Authenticating Redis with ' + config.redis.auth);
+  cluster.on('online', function(worker) {
+    logger.info('A worker with #' + worker.id);
+  });
+  cluster.on('listening', function(worker, address) {
+    logger.info('A worker is now connected to ' + address.address + ':' + address.port);
+  });
+  cluster.on('exit', function(worker, code, signal) {
+    logger.info('worker ' + worker.process.pid + ' died');
+  });
+} else {
+	logger.info('Setting up Redis Connection to ', config.redis.port, config.redis.host);
+	var redis = require("redis");
+	var client = redis.createClient(config.redis.port, config.redis.host);
 
-client.auth(config.redis.auth, function (err) {
-	if(err) {
-		logger.error('Could not authenticate ' +  config.redis.host + ':' + config.redis.port, err);
-		throw err;
-	}
-	logger.info('Authenticated ' +  config.redis.host + ':' + config.redis.port);
-	// Start the process
-	logger.info('Redis Listening to ' + config.redis.channel);
-	logger.trace('Popping Data from ' + config.redis.channel + ' into ' + config.redis.processingChannel + ' with timeout ' + config.redis.timeout);
-	client.brpoplpush(config.redis.channel, config.redis.processingChannel, config.redis.timeout, callback);
-	logger.info(('Listening on Redis Channel-' + (config.redis.host || 'localhost') + ':' + (config.redis.port || '6379')));
+	logger.trace('Authenticating Redis with ' + config.redis.auth);
 
-});
+	client.auth(config.redis.auth, function (err) {
+		if(err) {
+			logger.error('Could not authenticate ' +  config.redis.host + ':' + config.redis.port, err);
+			throw err;
+		}
+		logger.info('Authenticated ' +  config.redis.host + ':' + config.redis.port);
+		// Start the process
+		logger.info('Redis Listening to ' + config.redis.channel);
+		logger.trace('Popping Data from ' + config.redis.channel + ' into ' + config.redis.processingChannel + ' with timeout ' + config.redis.timeout);
+		client.brpoplpush(config.redis.channel, config.redis.processingChannel, config.redis.timeout, callback);
+		logger.info(('Listening on Redis Channel-' + (config.redis.host || 'localhost') + ':' + (config.redis.port || '6379')));
+
+	});
+}
 
 // Ensure that it continues to listen on the Redis Channel
 function callback(err, evt) {
