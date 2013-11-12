@@ -6,7 +6,7 @@
         "channel" : "core.lens.dbq",
         "processingChannel" : "core.lens.dbq.p",
         "outputChannel" : "vbms.dbq.notifications",
-        "timeout" : 0,
+        "timeout" : 12000,
         "encryption" : {
             "enabled" : true,
             "passPhrase" : "v4aV%ca36lil14P9DO1eZke3odyzOSQEy?cv?d.ur#s*z6K*r4eo2rmUZu4m0yph"
