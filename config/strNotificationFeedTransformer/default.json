@@ -1,0 +1,40 @@
+{
+    "redis" : {
+        "host" : "127.0.0.1",
+        "port" : "6379",
+        "auth" : "pass1",
+        "channel" : "core.lens.str",
+        "processingChannel" : "core.lens.str.p",
+        "outputChannel" : "vbms.str.notifications",
+        "timeout" : 0,
+        "encryption" : {
+            "enabled" : true,
+            "passPhrase" : "v4aV%ca36lil14P9DO1eZke3odyzOSQEy?cv?d.ur#s*z6K*r4eo2rmUZu4m0yph"
+        }
+    },
+	"transformer" : {
+		"file" : "../lib/defaultNotificationFeedTransformer/feedTransformer.js",
+		"options" : {
+			"feed" : {
+				"gridfsBasehref" : "http://localhost:3001/ecrud/v1/core/fs/",
+				"title" : "VA VLER DAS Life Event Notification Service (LENS)",
+				"version" : "0.1",
+				"gridfsPrefix" : "",
+				"atomJsonTemplate":"./lib/defaultNotificationFeedTransformer/notificationAtomFeedOneEntryOneLink_template.json",
+				"redirectHref" : "http://localhost?redirectURL="
+			}		
+		}
+	},
+    "log" : {
+        "console" : {
+            "level" : "trace",
+            "colorize" : true,
+            "label" : "STRTRANSFORMER",
+            "timestamp" : true
+        },
+        "file" : {
+            "level" : "trace",
+            "filename" : "transformer.log"
+        }
+    }
+}

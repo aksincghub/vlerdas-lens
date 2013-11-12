@@ -1,75 +1,45 @@
 {
-	"feed" : {
-		"gridfsBasehref" : "http://localhost:3001/ecrud/v1/core/fs/",
-		"title" : "VA VLER DAS Life Event Notification Service (LENS)",
-		"version" : "0.1",
-		"gridfsPrefix":"gridfs://",
-		"atomJsonTemplate":"./lib/notificationAtomFeedOneEntryOneLink_template.json",
-		"redirectHref" : "http://localhost:1234?redirectURL="
-	},
-	"collection2path" : {
-		"serviceTreatmentRecords" : "health/clinicalDocuments/historicalData/medicalHistory/serviceTreatmentRecords",
-		"disabilityBenefitsQuestionnaires" : "health/clinicalDocuments/clinicalAssessments/cpExams"
-	},
-	"redis" : {
-		"host" : "127.0.0.1",
-		"port" : "6379",
-		"auth" : "pass1",
-		"channel" : "core.6379",
-		"processingChannel" : "core.6379.p",
-		"timeout" : 0,
-		"encryption": {
-			"enabled":true,
-			"passPhrase": "v4aV%ca36lil14P9DO1eZke3odyzOSQEy?cv?d.ur#s*z6K*r4eo2rmUZu4m0yph"
-		}
-	},
-	"notification" : [{
-			"name" : "VBMS_SERVICE_TREATMENT_RECORDS_TOPIC",
-			"accept" : "application/atom+xml",
-			"channel" : "vbms.serviceTreatmentRecords.notifications",
-			"encryption": {
-				"enabled":true,
-				"passPhrase": "v4aV%ca36lil14P9DO1eZke3odyzOSQEy?cv?d.ur#s*z6K*r4eo2rmUZu4m0yph"
-			}
-		}, {
-			"name" : "VBMS_CPEXAMS_TOPIC",
-			"accept" : "application/atom+xml",
-			"channel" : "vbms.disabilityBenefitsQuestionnaires.notifications",
-			"encryption": {
-				"enabled":true,
-				"passPhrase": "v4aV%ca36lil14P9DO1eZke3odyzOSQEy?cv?d.ur#s*z6K*r4eo2rmUZu4m0yph"
-			}
-		}
-	],
-	"globalSubscriptions" : {
-		"disabilityBenefitsQuestionnaires" : [{
-				"name" : "VBMS_CPEXAMS_TOPIC"
-			}
-		]
-	},
-	"trackSubscriptions" : {
-		"serviceTreatmentRecords" : true
-	},
-	"ecrud" : {
-		"url" : "http://localhost:3001/ecrud/v1/core",
-		"retry" : {
-			"retries" : 5,
-			"factor" : 3,
-			"minTimeout" : 1000,
-			"maxTimeout" : 60000,
-			"randomize" : true
-		}
-	},
-	"log" : {
-		"console" : {
-			"level" : "trace",
-			"colorize" : true,
-			"label" : "LENS",
-			"timestamp" : true
-		},
-		"file" : {
-			"level" : "trace",
-			"filename" : "lens.log"
-		}
-	}
+    "redis" : {
+        "host" : "127.0.0.1",
+        "port" : "6379",
+        "auth" : "pass1",
+        "channel" : "core.lens.str",
+        "processingChannel" : "core.lens.str.p",
+        "outputChannel" : "core.lens.filtered.str",
+        "timeout" : 0,
+        "encryption" : {
+            "enabled" : true,
+            "passPhrase" : "v4aV%ca36lil14P9DO1eZke3odyzOSQEy?cv?d.ur#s*z6K*r4eo2rmUZu4m0yph"
+        }
+    },
+    "transformer" : {
+        "file" : "../lib/defaultSubscriptionFilter/subscriptionFilter.js",
+        "options" : {
+            "filter" : {
+                "parameterExpression" : "$..nc:PersonSSNIdentification.nc:IdentificationID",
+                "collectionUrl" : "http://localhost:3001/ecrud/v1/core/serviceTreatmentRecords.subscriptions",
+                "queryParameters" : "?query={%22subscription:Subscription.subscription:CommonData.nc:Person.nc:PersonSSNIdentification.nc:IdentificationID%22:%22:1%22}",
+                "retry" : {
+                    "retries" : 5,
+                    "factor" : 3,
+                    "minTimeout" : 1000,
+                    "maxTimeout" : 60000,
+                    "randomize" : true
+                }
+            },
+			"track":true
+        }
+    },
+    "log" : {
+        "console" : {
+            "level" : "trace",
+            "colorize" : true,
+            "label" : "STRSUBSCRIPTIONFILTER",
+            "timestamp" : true
+        },
+        "file" : {
+            "level" : "trace",
+            "filename" : "strSubscriptionFilter.log"
+        }
+    }
 }

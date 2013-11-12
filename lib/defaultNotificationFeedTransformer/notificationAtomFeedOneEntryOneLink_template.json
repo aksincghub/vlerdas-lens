@@ -1,0 +1,41 @@
+{
+  "feed": {
+    "-xmlns": "http://www.w3.org/2005/Atom",
+    "-xsi:schemaLocation": "http://www.w3.org/2005/Atom http://vler.va.gov/vler/schemas/atom/2005/vler/0.2/atom.xsd",
+    "-xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",    
+    "title": {
+      "-type": "text",
+      "#text": "VLER DAS Life Event Notification Service"
+    },
+    "subtitle": {
+      "-type": "text",
+      "#text": "None"
+    },
+    "id": "unknown",
+    "updated": "",
+    "generator": {
+      "-version": "0.1",
+      "#text": "VLER DAS Life Event Notification Service"
+    },
+    "author": { "name": "VLER DAS Life Event Notification Service" },
+    "entry": {
+      "title": "None",
+      "id": "unknown",
+      "published": "",
+      "updated": "",
+      "author": { "name": "Unknown" },
+      "content": {
+        "-type": "*/*",
+        "#text": "insert content here"
+      },
+      "link": {
+        "-title": "Unknown",
+        "-rel": "enclosure",
+        "-href": "https://localhost:3002/core/fs/000000000000000000000000",
+        "-type": "*/*",
+        "-length": "1000000",
+        "-hreflang": "en"
+      }
+    }
+  }
+}
