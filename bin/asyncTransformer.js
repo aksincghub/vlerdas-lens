@@ -12,12 +12,9 @@ var cluster = require("cluster");
 var numCPUs = require('os').cpus().length;
 var redis = require("redis");
 var RedisQueue = require("redisqueue");
-
+var redis = require("redis");
 //  Transformer
 var transformer = require(config.transformer.file);
-
-var redis = require("redis");
-var client = redis.createClient(config.redis.port, config.redis.host);
 
 // Cluster Setup for LENS
 if (cluster.isMaster) {
@@ -36,6 +33,8 @@ if (cluster.isMaster) {
         logger.info('worker ' + worker.process.pid + ' died');
     });
 } else {
+
+	var client = redis.createClient(config.redis.port, config.redis.host);
     client.auth(config.redis.auth, function (err) {
         if (err) {
             logger.error('Could not authenticate ' + config.redis.host + ':' + config.redis.port, err);
