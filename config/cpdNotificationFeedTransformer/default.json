@@ -3,9 +3,9 @@
         "host" : "127.0.0.1",
         "port" : "6379",
         "auth" : "pass1",
-        "channel" : "core.lens.dbq",
-        "processingChannel" : "core.lens.dbq.p",
-        "outputChannel" : "vbms.dbq.notifications",
+        "channel" : "core.lens.cpd",
+        "processingChannel" : "core.lens.cpd.p",
+        "outputChannel" : "core.lens.completedEvent",
         "timeout" : 0,
         "encryption" : {
             "enabled" : true,
@@ -13,15 +13,14 @@
         }
     },
 	"transformer" : {
-		"file" : "../lib/dbqNotificationFeedTransformer/dbqNotificationFeedTransformer.js",
+		"file" : "../lib/defaultNotificationFeedTransformer/feedTransformer.js",
 		"options" : {
 			"feed" : {
 				"gridfsBasehref" : "http://localhost:3001/ecrud/v1/core/fs/",
 				"title" : "VA VLER DAS Life Event Notification Service (LENS)",
 				"version" : "0.1",
 				"gridfsPrefix" : "",
-				"dbqCollectionName":"/core/disabilityBenefitsQuestionnaires/",
-				"dbqNotificationJsonTemplate":"./lib/dbqNotificationFeedTransformer/dbqNotificationFeed_template.json",
+				"atomJsonTemplate":"./lib/defaultNotificationFeedTransformer/notificationAtomFeedOneEntryOneLink_template.json",
 				"redirectHref" : "http://localhost?redirectURL="
 			}		
 		}
@@ -30,12 +29,12 @@
         "console" : {
             "level" : "trace",
             "colorize" : true,
-            "label" : "DBQTRANSFORMER",
+            "label" : "STRTRANSFORMER",
             "timestamp" : true
         },
         "file" : {
             "level" : "trace",
-            "filename" : "dbqTransformer.log"
+            "filename" : "transformer.log"
         }
     }
 }
